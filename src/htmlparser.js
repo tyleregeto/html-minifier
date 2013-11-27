@@ -193,13 +193,24 @@
         var attrs = [];
 
         rest.replace(attr, function(match, name) {
+          var quoteStyle = '"';
+          for(var i=0; i<match.length; i++) {
+            var c = match.charAt(i);
+            if(c === '"' || c === "'") {
+              quoteStyle = c;
+              break;
+            }
+          }
+          
           var value = arguments[2] ? arguments[2] :
             arguments[3] ? arguments[3] :
             arguments[4] ? arguments[4] :
             fillAttrs[name] ? name : "";
+
           attrs.push({
             name: name,
             value: value,
+            quoteStyle:quoteStyle,
             escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
           });
         });

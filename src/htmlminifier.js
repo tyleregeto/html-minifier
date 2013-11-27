@@ -242,7 +242,8 @@
   function normalizeAttribute(attr, attrs, tag, options) {
 
     var attrName = attr.name.toLowerCase(),
-        attrValue = attr.escaped,
+        attrValue = attr.value,
+        attrQuoteType = attr.quoteStyle,
         attrFragment;
 
     if ((options.removeRedundantAttributes &&
@@ -260,7 +261,7 @@
 
     if (!options.removeAttributeQuotes ||
         !canRemoveAttributeQuotes(attrValue)) {
-      attrValue = '"' + attrValue + '"';
+      attrValue = attrQuoteType + attrValue + attrQuoteType;
     }
 
     if (options.removeEmptyAttributes &&
