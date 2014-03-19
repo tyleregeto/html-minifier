@@ -243,6 +243,7 @@
 
     var attrName = attr.name.toLowerCase(),
         attrValue = attr.value,
+        attrEscaped = attr.escaped,
         attrQuoteType = attr.quoteStyle,
         attrFragment;
 
@@ -259,9 +260,12 @@
 
     attrValue = cleanAttributeValue(tag, attrName, attrValue);
 
-    if (!options.removeAttributeQuotes ||
-        !canRemoveAttributeQuotes(attrValue)) {
-      attrValue = attrQuoteType + attrValue + attrQuoteType;
+    if (!options.removeAttributeQuotes || !canRemoveAttributeQuotes(attrValue)) {
+      if(options.removeAttributeQuotes) {
+        attrValue = attrQuoteType + attrValue + attrQuoteType;
+      } else {
+        attrValue = '"' + attrEscaped + '"';
+      }
     }
 
     if (options.removeEmptyAttributes &&

@@ -193,13 +193,24 @@
         var attrs = [];
 
         rest.replace(attr, function(match, name) {
+          var quoteStyle = '"';
+          for(var i=0; i<match.length; i++) {
+            var c = match.charAt(i);
+            if(c === '"' || c === "'") {
+              quoteStyle = c;
+              break;
+            }
+          }
+          
           var value = arguments[2] ? arguments[2] :
             arguments[3] ? arguments[3] :
             arguments[4] ? arguments[4] :
             fillAttrs[name] ? name : "";
+
           attrs.push({
             name: name,
             value: value,
+            quoteStyle:quoteStyle,
             escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
           });
         });
@@ -442,7 +453,9 @@
 
   function canRemoveAttributeQuotes(value) {
     // http://mathiasbynens.be/notes/unquoted-attribute-values
-    return (/^[^\x20\t\n\f\r"'`=<>]+$/).test(value);
+    return (/^[^\x20\t\n\f\r"'`=<>]+$/).test(value) && !(/\/$/ ).test(value) &&
+    // make sure trailing slash is not interpreted as HTML self-closing tag
+        !(/\/$/).test(value);
   }
 
   function attributesInclude(attributes, attribute) {
@@ -606,7 +619,8 @@
   function normalizeAttribute(attr, attrs, tag, options) {
 
     var attrName = attr.name.toLowerCase(),
-        attrValue = attr.escaped,
+        attrValue = attr.value,
+        attrQuoteType = attr.quoteStyle,
         attrFragment;
 
     if ((options.removeRedundantAttributes &&
@@ -624,7 +638,7 @@
 
     if (!options.removeAttributeQuotes ||
         !canRemoveAttributeQuotes(attrValue)) {
-      attrValue = '"' + attrValue + '"';
+      attrValue = attrQuoteType + attrValue + attrQuoteType;
     }
 
     if (options.removeEmptyAttributes &&
